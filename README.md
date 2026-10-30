@@ -1,97 +1,342 @@
-# PPO Tic-Tac-Toe
+# 🎮 PPO Tic-Tac-Toe
 
-A small web-based Tic-Tac-Toe game. A PPO agent trained with `sb3-contrib` plays
-as **X** against a human player (**O**). The agent starts each game.
+### A Reinforcement Learning Project using Proximal Policy Optimization (PPO)
 
-## Requirements
+[![Python](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python)](https://www.python.org/)
+[![Gymnasium](https://img.shields.io/badge/Environment-Gymnasium-orange)](https://gymnasium.farama.org/)
+[![RL Algorithm](https://img.shields.io/badge/Algorithm-PPO-green)](https://spinningup.openai.com/en/latest/algorithms/ppo.html)
+[![Streamlit](https://img.shields.io/badge/Frontend-Streamlit-red?logo=streamlit)](https://streamlit.io/)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
+A web-based Tic-Tac-Toe game powered by **Reinforcement Learning (RL)**. The project implements a PPO-based AI agent that learns to play Tic-Tac-Toe through interaction with a custom Gymnasium environment.
+
+Play against the trained AI directly in your browser!
+
+<p align="center">
+  <a href="https://iatharvab-tictactoeppo.streamlit.app/">
+    <img src="https://img.shields.io/badge/🚀_PLAY_LIVE-Launch_App-success?style=for-the-badge" alt="Play Live"/>
+  </a>
+  <a href="https://github.com/batharva/tic_tac_toe_ppo">
+    <img src="https://img.shields.io/badge/GitHub-Source_Code-black?style=for-the-badge&logo=github" alt="Source Code"/>
+  </a>
+</p>
+
+---
+
+## 🌐 Live Demo
+
+**Play here:** https://iatharvab-tictactoeppo.streamlit.app/
+
+- AI plays as **X**.
+- Human player plays as **O**.
+- The AI makes the first move.
+- Start a new game and challenge the trained agent.
+
+---
+
+## 🧠 Project Overview
+
+The objective of this project is to implement a Reinforcement Learning agent capable of learning a strategy for Tic-Tac-Toe using Proximal Policy Optimization.
+
+Instead of using predefined rules to select moves, the agent learns a policy by interacting with the environment and receiving rewards based on game outcomes.
+
+The project consists of three major components:
+
+1. **Custom Gymnasium Environment:** Defines the game mechanics, state space, action space and reward system.
+2. **PPO Agent:** Uses a neural network-based policy to learn action selection.
+3. **Web Application:** Provides an interactive interface to play against the trained agent using Streamlit.
+
+## ⚙️ Technology Stack
+
+| Component | Technology |
+|---|---|
+| Programming Language | Python |
+| RL Algorithm | Proximal Policy Optimization (PPO) |
+| RL Framework | Stable-Baselines3 |
+| Action Masking | SB3-Contrib |
+| Environment | Gymnasium |
+| Deep Learning | PyTorch |
+| Numerical Computation | NumPy |
+| Web Interface | Streamlit |
+| Training Visualization | TensorBoard |
+| Deployment | Streamlit Community Cloud |
+| Version Control | Git & GitHub |
+
+---
+
+## 🎯 Reinforcement Learning Formulation
+
+The Tic-Tac-Toe problem is formulated as a Markov Decision Process (MDP).
+
+### 1. State Space (Observation)
+
+The board is represented as a one-dimensional array containing nine elements.
+
+Each cell has one of three possible values:
+
+| Value | Meaning |
+|---|---|
+| `1` | AI player (X) |
+| `-1` | Human/opponent (O) |
+| `0` | Empty cell |
+
+Example:
+
+```python
+observation = [
+    1,  0, -1,
+    0,  1,  0,
+   -1,  0,  0
+]
+```
+
+The observation space is defined as:
+
+```python
+spaces.Box(
+    low=-1,
+    high=1,
+    shape=(9,),
+    dtype=np.int8
+)
+```
+
+### 2. Action Space
+
+The agent can select any of the nine board positions.
+
+```python
+spaces.Discrete(9)
+```
+
+Each action corresponds to one cell:
+
+```text
+  0 | 1 | 2
+ ---+---+---
+  3 | 4 | 5
+ ---+---+---
+  6 | 7 | 8
+```
+
+### 3. Reward Function
+
+The agent receives rewards based on the outcome of the game.
+
+| Game Outcome | Reward |
+|---|---:|
+| AI wins | +1 |
+| AI loses | -1 |
+| Draw | +0.5 |
+| Valid move, game continues | 0 |
+| Invalid move | -1 |
+
+The objective is to learn a policy that maximizes the expected cumulative reward.
+
+### 4. Action Masking
+
+The project uses **Maskable PPO** from SB3-Contrib to prevent the agent from selecting occupied cells.
+
+The action mask identifies legal moves:
+
+```python
+def action_masks(self):
+    return self.board == 0
+```
+
+- `True`: Valid action.
+- `False`: Invalid action.
+
+This allows the policy to select only from currently available positions.
+
+---
+
+## 🤖 PPO Algorithm
+
+Proximal Policy Optimization (PPO) is a policy-gradient reinforcement learning algorithm that improves a policy through constrained updates.
+
+The implementation uses an Actor-Critic architecture.
+
+**Actor Network**
+
+- Takes the current board observation.
+- Produces a probability distribution over the nine possible actions.
+- Selects an action based on the learned policy.
+
+**Critic Network**
+
+- Estimates the value of the current state.
+- Helps calculate the advantage function.
+- Guides policy optimization.
+
+### Neural Network Architecture
+
+```text
+       Board Observation
+          (9 Inputs)
+              |
+              v
+       Shared MLP Extractor
+              |
+       +------+------+
+       |             |
+       v             v
+      Actor        Critic
+       |             |
+       v             v
+   9 Actions     State Value
+```
+
+### PPO Objective
+
+PPO uses a clipped surrogate objective:
+
+\[
+L^{CLIP}(\theta)=
+\mathbb{E}_t[
+\min(
+r_t(\theta)\hat A_t,
+\operatorname{clip}(r_t(\theta),1-\epsilon,1+\epsilon)
+\hat A_t
+)]
+\]
+
+Where:
+
+- \(r_t(\theta)\) is the probability ratio between new and old policies.
+- \(\hat A_t\) is the estimated advantage.
+- \(\epsilon\) controls the clipping range.
+
+---
+
+## 📁 Project Structure
+
+```text
+tic_tac_toe_ppo/
+│
+├── environment/
+│   ├── __init__.py
+│   └── tic_tac_toe.py
+│
+├── training/
+│   ├── __init__.py
+│   ├── train.py
+│   ├── evaluate.py
+│   ├── play.py
+│   ├── test_environment.py
+│   └── check_env.py
+│
+├── models/
+│   └── tic_tac_toe_ppo.zip
+│
+├── checkpoints/
+│
+├── logs/
+│
+├── backend/
+│   ├── __init__.py
+│   └── main.py
+│
+├── frontend/
+│   ├── index.html
+│   ├── style.css
+│   └── script.js
+│
+├── streamlit_app.py
+├── requirements.txt
+├── README.md
+└── LICENSE
+```
+
+### Directory Description
+
+| Directory/File | Purpose |
+|---|---|
+| `environment/` | Custom Gymnasium game environment |
+| `training/` | PPO training and evaluation scripts |
+| `models/` | Saved trained PPO model |
+| `checkpoints/` | Intermediate training checkpoints |
+| `logs/` | TensorBoard training logs |
+| `backend/` | FastAPI implementation |
+| `frontend/` | HTML, CSS and JavaScript interface |
+| `streamlit_app.py` | Streamlit web application |
+| `requirements.txt` | Project dependencies |
+
+---
+
+## 🚀 Installation and Setup
+
+### Prerequisites
 
 - Python 3.10 or newer
 - pip
-- Internet connection for the first dependency installation
+- Git
 
-## 1. Create and activate a virtual environment
+### 1. Clone the repository
 
-### Windows PowerShell
+```bash
+git clone https://github.com/batharva/tic_tac_toe_ppo.git
 
-```powershell
+cd tic_tac_toe_ppo
+```
+
+### 2. Create a virtual environment
+
+**Windows:**
+
+```bash
 py -m venv .venv
-.venv\Scripts\Activate.ps1
+
+.venv\Scripts\activate
 ```
 
-If PowerShell blocks activation, run:
-
-```powershell
-Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
-.venv\Scripts\Activate.ps1
-```
-
-### macOS / Linux
+**Linux / macOS:**
 
 ```bash
 python3 -m venv .venv
+
 source .venv/bin/activate
 ```
 
-## 2. Install packages
-
-Run from the project root (the folder containing `requirements.txt`):
+### 3. Install dependencies
 
 ```bash
 python -m pip install --upgrade pip
+
 pip install -r requirements.txt
 ```
 
-## 3. Train the PPO agent
+---
+
+## 🏋️ Training the PPO Agent
+
+To train the agent from scratch, execute:
 
 ```bash
 python -m training.train
 ```
 
-By default, training runs for 200,000 timesteps. You can change this:
+The default training configuration uses 200,000 timesteps.
+
+To increase training duration:
 
 ```bash
 python -m training.train --timesteps 500000
 ```
 
-The final model is saved as:
+The trained model is saved at:
 
 ```text
 models/tic_tac_toe_ppo.zip
 ```
 
-Training checkpoints are saved in `checkpoints/`, and TensorBoard logs in `logs/`.
+Intermediate checkpoints are stored in the `checkpoints/` directory.
 
-## 4. Play in the terminal (optional)
+### Monitor Training
 
-```bash
-python -m training.play
-```
+TensorBoard can be used to visualize training metrics.
 
-## 5. Evaluate the model (optional)
-
-```bash
-python -m training.evaluate --games 1000
-```
-
-## 6. Launch the web game
-
-Make sure the model has finished training. Then run:
-
-```bash
-uvicorn backend.main:app --reload
-```
-
-Open this address in your browser:
-
-http://127.0.0.1:8000
-
-Click **New game**. The PPO agent plays X and makes the first move; you play O.
-
-Stop the server with `Ctrl+C`.
-
-## 7. View TensorBoard (optional)
-
-Open a second terminal, activate the same virtual environment, then run:
+Run:
 
 ```bash
 tensorboard --logdir logs
@@ -99,53 +344,104 @@ tensorboard --logdir logs
 
 Open:
 
-http://127.0.0.1:6006
-
-## Project structure
-
 ```text
-tic_tac_toe_ppo/
-├── environment/
-│   ├── __init__.py
-│   └── tic_tac_toe.py
-├── training/
-│   ├── __init__.py
-│   ├── train.py
-│   ├── evaluate.py
-│   └── play.py
-├── models/
-├── checkpoints/
-├── logs/
-├── backend/
-│   ├── __init__.py
-│   └── main.py
-├── frontend/
-│   ├── index.html
-│   ├── style.css
-│   └── script.js
-├── requirements.txt
-└── README.md
+http://localhost:6006
 ```
 
-## Notes
+### Evaluate the Agent
 
-- This is a learning project and a baseline, not a perfect Tic-Tac-Toe solver.
-- Training uses a random opponent. The agent always plays X in the training environment.
-- The web backend keeps one game state in server memory. It is intended for local,
-  single-user play, not simultaneous multiplayer sessions.
-- The game uses action masking so the PPO policy only selects empty board cells.
+Evaluate the trained model over 1,000 games:
 
+```bash
+python -m training.evaluate --games 1000
+```
 
-## Deploy on Streamlit Community Cloud
+### Play in the Terminal
 
-1. Train the model locally:
-   `python -m training.train`
-2. Confirm that `models/tic_tac_toe_ppo.zip` exists.
-3. Commit and push the project, including the trained model, to a GitHub repository.
-4. Open https://share.streamlit.io/ and sign in with GitHub.
-5. Select **Create app**, choose the repository and branch, and set the main file path to:
-   `streamlit_app.py`
-6. Deploy. Streamlit installs packages from `requirements.txt`.
+```bash
+python -m training.play
+```
 
-The Streamlit app loads the trained model from `models/tic_tac_toe_ppo.zip`.
-Do not deploy before the model file is present in the repository.
+---
+
+## 🌍 Run the Web Application Locally
+
+The project provides a Streamlit-based interface.
+
+After ensuring that the trained model exists, execute:
+
+```bash
+streamlit run streamlit_app.py
+```
+
+Open the application at:
+
+```text
+http://localhost:8501
+```
+
+---
+
+## ☁️ Deployment
+
+The application is deployed using **Streamlit Community Cloud**.
+
+Deployment workflow:
+
+1. Train the PPO agent.
+2. Save the trained model in the `models/` directory.
+3. Push the project files and model to GitHub.
+4. Connect the GitHub repository to Streamlit Community Cloud.
+5. Configure `streamlit_app.py` as the main application file.
+6. Deploy the application.
+
+**Live Application:** https://iatharvab-tictactoeppo.streamlit.app/
+
+---
+
+## 📊 Current Implementation and Limitations
+
+- The agent is trained using a random opponent.
+- The training agent always plays as X.
+- The web application uses the trained model for deterministic action selection.
+- Action masking prevents the PPO agent from selecting occupied cells.
+- The current implementation is a learning baseline and is not guaranteed to play optimally.
+
+### Future Improvements
+
+- [ ] Implement self-play reinforcement learning.
+- [ ] Introduce a minimax-based evaluation opponent.
+- [ ] Compare PPO performance against random and optimal opponents.
+- [ ] Add training progress visualization to the web interface.
+- [ ] Experiment with different neural network architectures.
+- [ ] Compare different reward functions and PPO hyperparameters.
+- [ ] Add win-rate and cumulative-reward analytics.
+
+---
+
+## 📚 References
+
+1. Schulman et al. (2017) — [Proximal Policy Optimization Algorithms](https://arxiv.org/abs/1707.06347).
+2. [Stable-Baselines3 Documentation](https://stable-baselines3.readthedocs.io/).
+3. [SB3-Contrib Documentation](https://sb3-contrib.readthedocs.io/).
+4. [Gymnasium Documentation](https://gymnasium.farama.org/).
+
+---
+
+## 👨‍💻 Author
+
+**Atharva Bhosale**
+
+- GitHub: [@batharva](https://github.com/batharva)
+- Project Repository: [tic_tac_toe_ppo](https://github.com/batharva/tic_tac_toe_ppo)
+- Live Application: [PPO Tic-Tac-Toe](https://iatharvab-tictactoeppo.streamlit.app/)
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+---
+
+⭐ If you find this project interesting, consider giving the repository a star!
