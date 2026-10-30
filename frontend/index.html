@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PPO Tic-Tac-Toe</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <main class="app">
+    <header>
+      <div class="eyebrow">REINFORCEMENT LEARNING · PPO</div>
+      <h1>Tic-Tac-Toe <span>AI</span></h1>
+      <p class="subtitle">Challenge an agent trained with Proximal Policy Optimization.</p>
+    </header>
+
+    <section class="game-card">
+      <div class="players">
+        <div class="player ai-player"><span class="symbol x">X</span><div><b>AI Agent</b><small>PPO · plays first</small></div></div>
+        <div class="vs">VS</div>
+        <div class="player"><span class="symbol o">O</span><div><b>You</b><small>Human player</small></div></div>
+      </div>
+
+      <div id="status" class="status" role="status">Press “New game” to begin.</div>
+      <div id="board" class="board" aria-label="Tic Tac Toe board">
+        <button class="cell" data-cell="0" aria-label="Cell 1"></button>
+        <button class="cell" data-cell="1" aria-label="Cell 2"></button>
+        <button class="cell" data-cell="2" aria-label="Cell 3"></button>
+        <button class="cell" data-cell="3" aria-label="Cell 4"></button>
+        <button class="cell" data-cell="4" aria-label="Cell 5"></button>
+        <button class="cell" data-cell="5" aria-label="Cell 6"></button>
+        <button class="cell" data-cell="6" aria-label="Cell 7"></button>
+        <button class="cell" data-cell="7" aria-label="Cell 8"></button>
+        <button class="cell" data-cell="8" aria-label="Cell 9"></button>
+      </div>
+      <button id="new-game" class="new-game">＋ New game</button>
+      <p id="error" class="error"></p>
+    </section>
+
+    <footer>
+      <span class="dot"></span> Model inference runs locally on the Python backend
+    </footer>
+  </main>
+  <script src="/static/script.js"></script>
+</body>
+</html>
